@@ -15,6 +15,8 @@
  */
 package org.androidpn.client;
 
+import java.util.List;
+
 import android.util.Log;
 
 /** 
@@ -35,15 +37,22 @@ public class ReconnectionThread extends Thread {
         this.xmppManager = xmppManager;
         this.waiting = 0;
     }
-
+    
     public void run() {
         try {
-            while (!isInterrupted()) {
-                Log.d(LOGTAG, "Trying to reconnect in " + waiting()
-                        + " seconds");
-                Thread.sleep((long) waiting() * 1000L);
-                xmppManager.connect();
-                waiting++;
+            while (!isInterrupted() || !xmppManager.getConnection().isAuthenticated()) {
+                if (!xmppManager.isTaskEmpty()) // 如果队列有任务, 则等待任务执行完毕再重新发起连接
+                {
+                    Thread.sleep(3 * 1000L);
+                }
+                else
+                {
+                    Log.d(LOGTAG, "Trying to reconnect in " + waiting()
+                            + " seconds");
+                    Thread.sleep((long) waiting() * 1000L);
+                    xmppManager.connect();
+                    waiting++;
+                }
             }
         } catch (final InterruptedException e) {
             xmppManager.getHandler().post(new Runnable() {
