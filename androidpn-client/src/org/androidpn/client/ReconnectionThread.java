@@ -15,8 +15,6 @@
  */
 package org.androidpn.client;
 
-import java.util.List;
-
 import android.util.Log;
 
 /** 
