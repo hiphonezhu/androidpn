@@ -38,7 +38,7 @@ public class ReconnectionThread extends Thread {
     
     public void run() {
         try {
-            while (!isInterrupted() || !xmppManager.getConnection().isAuthenticated()) {
+            while (!isInterrupted() && !xmppManager.getConnection().isAuthenticated()) {
                 if (!xmppManager.isTaskEmpty()) // 如果队列有任务, 则等待任务执行完毕再重新发起连接
                 {
                     Thread.sleep(3 * 1000L);
